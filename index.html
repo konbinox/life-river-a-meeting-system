@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教会主日崇拜 - 动态聚会系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 新增：通知样式 */
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 顶部控制栏 -->
+        <div id="control-bar">
+            <div class="control-left">
+                <button id="prev-btn" class="control-btn" title="上一页">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span id="page-indicator">1 / 24</span>
+                <button id="next-btn" class="control-btn" title="下一页">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <span id="timer" class="timer">00:00</span>
+            </div>
+            
+            <div class="control-center">
+                <h1 id="meeting-title">主日崇拜</h1>
+                <div id="meeting-info">
+                    <span id="current-date">2024-01-07</span>
+                    <span id="current-theme">在主爱中合一</span>
+                </div>
+            </div>
+            
+            <div class="control-right">
+                <!-- 新增：复位按钮 -->
+                <button id="reset-btn" class="control-btn" title="恢复默认页面 (Ctrl+R)" style="color: #e74c3c;">
+                    <i class="fas fa-redo"></i>
+                </button>
+                <button id="fullscreen-btn" class="control-btn" title="全屏">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button id="config-btn" class="control-btn" title="配置">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button id="voice-toggle" class="control-btn" title="语音控制">
+                    <i class="fas fa-microphone"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 主持人显示区域 -->
+        <div id="host-display">
+            <div id="host-avatar">
+                <img src="" alt="主持人" id="host-img">
+            </div>
+            <div id="host-info">
+                <h2 id="host-name">主持人</h2>
+                <p id="host-role">带领聚会</p>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div id="content-container">
+            <!-- 页面内容将动态加载到这里 -->
+            <div id="current-page">
+                <div class="page-content">
+                    <!-- 动态内容 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 页面导航点 -->
+        <div id="page-navigation">
+            <div class="nav-dots">
+                <!-- 导航点将动态生成 -->
+            </div>
+        </div>
+
+        <!-- 语音控制指示器 -->
+        <div id="voice-indicator" class="hidden">
+            <div class="voice-pulse"></div>
+            <div class="voice-text">语音控制已激活</div>
+        </div>
+    </div>
+
+    <!-- 脚本加载 -->
+    <script src="app.js"></script>
+    
+    <!-- 语音控制模块（预留） -->
+    <script src="https://cdn.jsdelivr.net/npm/annyang@2.6.1/dist/annyang.min.js"></script>
+    <script>
+        // 语音控制初始化（预留）
+        if (annyang) {
+            console.log('语音控制库已加载');
+        }
+    </script>
+</body>
+</html>

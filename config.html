@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教会聚会系统 - 配置界面</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 配置页面特定样式 */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        
+        .config-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .config-header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .config-header h1 {
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        
+        .config-header p {
+            color: #666;
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        .config-sections {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .config-nav {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .nav-item {
+            padding: 15px;
+            margin: 8px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .nav-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .nav-item.active {
+            background: #3498db;
+            color: white;
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* 修复：右侧内容区域 */
+        .config-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            max-height: calc(100vh - 200px);
+            overflow: hidden;
+        }
+        
+        .form-section {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+        
+        .form-section.active {
+            display: flex;
+        }
+        
+        .form-section-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            padding-bottom: 20px;
+        }
+        
+        .form-section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            flex-shrink: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .form-control:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #219653;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        
+        /* 修复：操作按钮组始终在底部 */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            padding-top: 25px;
+            border-top: 1px solid #eee;
+            flex-wrap: wrap;
+            background: white;
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+        
+        /* 复选框组 */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+        
+        /* 文本域 */
+        .textarea-control {
+            min-height: 100px;
+            max-height: 200px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+        
+        /* 主持人选项 */
+        .host-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .host-option {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .host-option:hover {
+            border-color: #3498db;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .host-option.selected {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+        
+        .host-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .host-option h4 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .host-option p {
+            margin: 0;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .host-controls {
+            margin-top: 10px;
+        }
+        
+        /* 页面列表 */
+        .page-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+            padding-right: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+        
+        .page-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .page-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .page-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .page-type {
+            background: #e9ecef;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .page-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        /* 歌曲和报告项 */
+        .song-item, .announcement-item {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .song-header, .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .song-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 13px;
+            color: #666;
+            flex-wrap: wrap;
+        }
+        
+        .song-lyrics pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 10px 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .important-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .song-controls, .announcement-controls {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        
+        .add-item-btn {
+            margin-top: 10px;
+        }
+        
+        /* 歌曲和报告列表容器 */
+        .songs-list, .announcements-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-top: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+        
+        /* 背景设置特定样式 */
+        #background-preview {
+            width: 100%;
+            height: 120px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s;
+        }
+        
+        input[type="color"] {
+            height: 40px;
+            width: 100%;
+            padding: 3px;
+            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .range-value {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .section-divider {
+            margin: 20px 0;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        /* 预览区域 */
+        .preview-area {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 200px;
+            max-height: 350px;
+            overflow-y: auto;
+            margin-top: 20px;
+            border: 2px dashed #ddd;
+            flex: 1;
+        }
+        
+        .preview-placeholder {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .preview-pages {
+            display: grid;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .preview-page {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .preview-page-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .page-number {
+            background: #3498db;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        /* 状态栏 */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(44, 62, 80, 0.95);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            font-size: 13px;
+        }
+        
+        #status-text {
+            font-weight: 600;
+        }
+        
+        #last-saved {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        /* 提示信息 */
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+            max-width: 350px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .alert-success {
+            background: #27ae60;
+            color: white;
+            border-left: 5px solid #219653;
+        }
+        
+        .alert-error {
+            background: #e74c3c;
+            color: white;
+            border-left: 5px solid #c0392b;
+        }
+        
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* 滚动条美化 */
+        .config-content::-webkit-scrollbar,
+        .form-section-content::-webkit-scrollbar,
+        .page-list::-webkit-scrollbar,
+        .songs-list::-webkit-scrollbar,
+        .announcements-list::-webkit-scrollbar,
+        .host-options::-webkit-scrollbar,
+        .preview-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .config-content::-webkit-scrollbar-track,
+        .form-section-content::-webkit-scrollbar-track,
+        .page-list::-webkit-scrollbar-track,
+        .songs-list::-webkit-scrollbar-track,
+        .announcements-list::-webkit-scrollbar-track,
+        .host-options::-webkit-scrollbar-track,
+        .preview-area::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .config-content::-webkit-scrollbar-thumb,
+        .form-section-content::-webkit-scrollbar-thumb,
+        .page-list::-webkit-scrollbar-thumb,
+        .songs-list::-webkit-scrollbar-thumb,
+        .announcements-list::-webkit-scrollbar-thumb,
+        .host-options::-webkit-scrollbar-thumb,
+        .preview-area::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 4px;
+        }
+        
+        .config-content::-webkit-scrollbar-thumb:hover,
+        .form-section-content::-webkit-scrollbar-thumb:hover,
+        .page-list::-webkit-scrollbar-thumb:hover,
+        .songs-list::-webkit-scrollbar-thumb:hover,
+        .announcements-list::-webkit-scrollbar-thumb:hover,
+        .host-options::-webkit-scrollbar-thumb:hover,
+        .preview-area::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .config-sections {
+                grid-template-columns: 1fr;
+            }
+            
+            .config-nav {
+                position: relative;
+                top: 0;
+            }
+            
+            .config-content {
+                max-height: 500px;
+            }
+            
+            .host-options {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .config-container {
+                padding: 10px;
+            }
+            
+            .config-content {
+                padding: 20px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .host-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .page-controls {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+        /* 页面拖拽效果 */
+.page-item.dragging {
+    opacity: 0.5;
+    background-color: #f8f9fa;
+}
+
+.page-item.dragover {
+    border-left: 4px solid #27ae60;
+    background-color: rgba(39, 174, 96, 0.1);
+}
+
+.no-items {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+        /* ============ 页面管理样式 ============ */
+        .page-item.dragging {
+            opacity: 0.5;
+            background: #f8f9fa;
+        }
+        
+        .page-item.dragover {
+            border-left: 4px solid #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+        
+        .no-items {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        /* 编辑模态框样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+    /* 颜色输入组件 */
+.color-input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.color-input-group .color-picker {
+    width: 50px;
+    height: 38px;
+    padding: 2px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.color-input-group .color-hex {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+}
+
+/* 模态对话框 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    max-height: 80vh;
+    overflow-y: auto;
+    min-width: 400px;
+}
+
+.form-section {
+    margin: 20px 0;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #007bff;
+}
+
+.form-section h3 {
+    margin-top: 0;
+    color: #495057;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    padding: 8px 0;
+}
+
+/* 表单样式 */
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #555;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+ /* 编辑对话框样式 */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .form-section {
+        margin: 15px 0;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border-left: 4px solid #007bff;
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .form-row .form-group {
+        flex: 1;
+    }
+    
+    .color-input-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    
+    .color-picker {
+        width: 50px;
+        height: 38px;
+        padding: 2px;
+        cursor: pointer;
+    }
+    
+    .color-hex {
+        flex: 1;
+        font-family: monospace;
+        text-transform: uppercase;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    
+    .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    </style>
+</head>
+<!-- 脚本 -->
+<script src="page-editor.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const manager = new ConfigManager();
+        manager.initialize();
+    });
+</script>
+<body>
+    <div class="config-container">
+        <div class="config-header">
+            <h1><i class="fas fa-church"></i> 教会聚会系统配置中心</h1>
+            <p>可视化编辑聚会内容，实时预览效果</p>
+        </div>
+        
+        <div class="config-sections">
+            <!-- 左侧导航 -->
+            <div class="config-nav">
+                <div class="nav-item active" data-section="basic">
+                    <i class="fas fa-info-circle"></i> 基本信息
+                </div>
+                <div class="nav-item" data-section="host">
+                    <i class="fas fa-user"></i> 主持人设置
+                </div>
+                <div class="nav-item" data-section="pages">
+                    <i class="fas fa-list-ol"></i> 页面管理
+                </div>
+                <div class="nav-item" data-section="worship">
+                    <i class="fas fa-music"></i> 敬拜歌曲
+                </div>
+                <div class="nav-item" data-section="announcements">
+                    <i class="fas fa-bullhorn"></i> 家事报告
+                </div>
+                <div class="nav-item" data-section="scripture">
+                    <i class="fas fa-bible"></i> 经文设置
+                </div>
+                <div class="nav-item" data-section="message">
+                    <i class="fas fa-comment-alt"></i> 信息分享
+                </div>
+                <div class="nav-item" data-section="special">
+                    <i class="fas fa-star"></i> 特别项目
+                </div>
+                <div class="nav-item" data-section="settings">
+                    <i class="fas fa-sliders-h"></i> 系统设置
+                </div>
+                <div class="nav-item" data-section="preview">
+                    <i class="fas fa-eye"></i> 实时预览
+                </div>
+                <div class="nav-item" data-section="export">
+                    <i class="fas fa-file-export"></i> 导入导出
+                </div>
+            </div>
+            
+            <!-- 右侧内容 -->
+            <div class="config-content">
+                <!-- 基本信息 -->
+                <div class="form-section active" id="basic-section">
+                    <h2><i class="fas fa-info-circle"></i> 聚会基本信息</h2>
+                    <p class="description">设置本次聚会的基本信息和主题</p>
+                    
+                    <div class="form-section-content">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-calendar"></i> 聚会日期 *</label>
+                                <input type="date" class="form-control" id="meeting-date">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-clock"></i> 聚会时间</label>
+                                <input type="time" class="form-control" id="meeting-time" value="09:30">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-heading"></i> 聚会标题 *</label>
+                            <input type="text" class="form-control" id="meeting-title" placeholder="例如：主日崇拜、周三祷告会等">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> 聚会主题</label>
+                            <input type="text" class="form-control" id="meeting-theme" placeholder="例如：在主爱中合一、与神和好等">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> 聚会地点</label>
+                            <input type="text" class="form-control" id="meeting-location" placeholder="例如：教会大堂、线上会议室等">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 主持人设置 -->
+                <div class="form-section" id="host-section">
+                    <h2><i class="fas fa-user"></i> 主持人选择</h2>
+                    <p class="description">选择本次聚会的主持人（支持6选1），可添加自定义主持人</p>
+                    
+                    <div class="form-section-content">
+                        <h3>选择主持人</h3>
+                        <div class="host-options" id="host-options">
+                            <!-- 主持人选项将通过JavaScript动态生成 -->
+                        </div>
+                        
+                        <h3>添加新主持人</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>姓名 *</label>
+                                <input type="text" class="form-control" id="new-host-name" placeholder="请输入主持人姓名">
+                            </div>
+                            <div class="form-group">
+                                <label>角色/职务</label>
+                                <input type="text" class="form-control" id="new-host-role" placeholder="例如：长老、执事、同工等">
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" id="add-host-btn">
+                            <i class="fas fa-plus"></i> 添加主持人
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 页面管理 -->
+                <div class="form-section" id="pages-section">
+                    <h2><i class="fas fa-list-ol"></i> 页面顺序管理</h2>
+                    <p class="description">拖拽调整页面顺序，勾选启用/禁用页面。可以预览标准聚会流程</p>
+                    
+                    <div class="form-section-content">
+                        <div class="form-group">
+                            <button class="btn btn-primary" id="show-standard-flow">
+                                <i class="fas fa-eye"></i> 预览标准流程
+                            </button>
+                            <button class="btn btn-secondary" id="reset-pages">
+                                <i class="fas fa-redo"></i> 恢复默认顺序
+                            </button>
+                        </div>
+                     <!-- 页面管理头部 -->
+                        <div class="page-management-header mb-3">
+                            <h4>页面管理</h4>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-plus"></i> 添加新页面
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" data-page-type="welcome">欢迎页</a></li>
+                                    <li><a class="dropdown-item" href="#" data-page-type="worship">敬拜赞美</a></li>
+                                    <li><a class="dropdown-item" href="#" data-page-type="announcements">家事报告</a></li>
+                                    <li><a class="dropdown-item" href="#" data-page-type="scripture">经文分享</a></li>
+                                    <li><a class="dropdown-item" href="#" data-page-type="message">信息分享</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#" data-page-type="special">特别项目</a></li>
+                                </ul>
+                            </div>
+                        </div>   
+                        <div class="page-list" id="page-list">
+                            <!-- 页面列表将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 敬拜歌曲 -->
+                <div class="form-section" id="worship-section">
+                    <h2><i class="fas fa-music"></i> 敬拜歌曲设置</h2>
+                    <p class="description">添加和管理敬拜歌曲，支持歌词、调性、速度等设置</p>
+                    
+                    <div class="form-section-content">
+                        <h3>添加新歌曲</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>歌曲名称 *</label>
+                                <input type="text" class="form-control" id="song-title" placeholder="例如：奇异恩典">
+                            </div>
+                            <div class="form-group">
+                                <label>调性</label>
+                                <input type="text" class="form-control" id="song-key" placeholder="例如：C调">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>速度</label>
+                                <input type="text" class="form-control" id="song-tempo" placeholder="例如：中板、舒缓、激昂">
+                            </div>
+                            <div class="form-group">
+                                <label>时长（秒）</label>
+                                <input type="number" class="form-control" id="song-duration" placeholder="例如：240">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>歌词</label>
+                            <textarea class="form-control textarea-control" id="song-lyrics" placeholder="请输入歌词，每行一段"></textarea>
+                        </div>
+                        
+                        <button class="btn btn-secondary" id="add-song-btn">
+                            <i class="fas fa-plus"></i> 添加歌曲
+                        </button>
+                        
+                        <h3 style="margin-top: 30px;">歌曲列表</h3>
+                        <div class="songs-list" id="songs-list">
+                            <!-- 歌曲列表将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 家事报告 -->
+                <div class="form-section" id="announcements-section">
+                    <h2><i class="fas fa-bullhorn"></i> 家事报告</h2>
+                    <p class="description">添加和管理教会家事报告，可标记重要事项</p>
+                    
+                    <div class="form-section-content">
+                        <h3>添加新报告</h3>
+                        <div class="form-group">
+                            <label>报告标题 *</label>
+                            <input type="text" class="form-control" id="announcement-title" placeholder="例如：周二祷告会、青年团契等">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>详细内容</label>
+                            <textarea class="form-control textarea-control" id="announcement-content" placeholder="请输入报告的详细内容"></textarea>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="announcement-important">
+                            <label for="announcement-important">重要事项（将在显示时高亮）</label>
+                        </div>
+                        
+                        <button class="btn btn-secondary" id="add-announcement-btn">
+                            <i class="fas fa-plus"></i> 添加报告
+                        </button>
+                        
+                        <h3 style="margin-top: 30px;">报告列表</h3>
+                        <div class="announcements-list" id="announcements-list">
+                            <!-- 报告列表将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 经文设置 -->
+                <div class="form-section" id="scripture-section">
+                    <h2><i class="fas fa-bible"></i> 经文设置</h2>
+                    <p class="description">设置本次聚会的经文分享内容</p>
+                    
+                    <div class="form-section-content">
+                        <div class="form-group">
+                            <label>经文引用</label>
+                            <input type="text" class="form-control" id="scripture-reference" placeholder="例如：约翰福音 3:16">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>经文内容</label>
+                            <textarea class="form-control textarea-control" id="scripture-text" placeholder="请输入经文内容" rows="5"></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>圣经版本</label>
+                                <input type="text" class="form-control" id="scripture-version" placeholder="例如：和合本">
+                            </div>
+                            <div class="form-group">
+                                <label>显示风格</label>
+                                <select class="form-control" id="scripture-style">
+                                    <option value="traditional">传统样式</option>
+                                    <option value="modern">现代样式</option>
+                                    <option value="simple">简洁样式</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="show-reference" checked>
+                            <label for="show-reference">显示经文引用</label>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="show-version" checked>
+                            <label for="show-version">显示圣经版本</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 信息分享 -->
+                <div class="form-section" id="message-section">
+                    <h2><i class="fas fa-comment-alt"></i> 信息分享设置</h2>
+                    <p class="description">设置讲道信息的大纲和内容</p>
+                    
+                    <div class="form-section-content">
+                        <div class="form-group">
+                            <label>信息标题</label>
+                            <input type="text" class="form-control" id="message-title" placeholder="例如：在基督里的新生命">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>讲员</label>
+                            <input type="text" class="form-control" id="message-speaker" placeholder="请输入讲员姓名">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>信息大纲（支持多个要点）</label>
+                            <div id="message-outlines">
+                                <!-- 大纲要点将通过JavaScript动态生成 -->
+                            </div>
+                            <button class="btn btn-secondary" id="add-outline-btn">
+                                <i class="fas fa-plus"></i> 添加要点
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 特别项目 -->
+                <div class="form-section" id="special-section">
+                    <h2><i class="fas fa-star"></i> 特别项目设置</h2>
+                    <p class="description">设置特别项目如：圣餐、生日祝福、洗礼等</p>
+                    
+                    <div class="form-section-content">
+                        <div class="form-group">
+                            <label>选择特别项目类型</label>
+                            <select class="form-control" id="special-type">
+                                <option value="">-- 请选择 --</option>
+                                <option value="communion">圣餐</option>
+                                <option value="birthday">生日祝福</option>
+                                <option value="baptism">洗礼</option>
+                                <option value="wedding">结婚周年</option>
+                                <option value="newmember">新会友欢迎</option>
+                                <option value="children">儿童祝福</option>
+                            </select>
+                        </div>
+                        
+                        <div id="special-content">
+                            <!-- 不同特别项目的内容将动态显示 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 系统设置 -->
+                <div class="form-section" id="settings-section">
+                    <h2><i class="fas fa-sliders-h"></i> 系统设置</h2>
+                    <p class="description">调整系统显示和行为设置</p>
+                    
+                    <div class="form-section-content">
+                        <!-- 背景设置部分 -->
+                        <h3><i class="fas fa-image"></i> 背景设置</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>背景类型</label>
+                                <select class="form-control" id="background-type">
+                                    <option value="gradient">渐变背景</option>
+                                    <option value="solid">纯色背景</option>
+                                    <option value="image">图片背景</option>
+                                    <option value="pattern">图案背景</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>主题颜色</label>
+                                <select class="form-control" id="theme-color">
+                                    <option value="blue">蓝色主题</option>
+                                    <option value="purple">紫色主题</option>
+                                    <option value="red">红色主题</option>
+                                    <option value="green">绿色主题</option>
+                                    <option value="gold">金色主题</option>
+                                    <option value="light">明亮主题</option>
+                                    <option value="dark">深色主题</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="background-options">
+                            <!-- 动态显示不同的背景选项 -->
+                        </div>
+                        
+                        <!-- 背景预览 -->
+                        <div class="form-group">
+                            <label>背景预览</label>
+                            <div id="background-preview"></div>
+                        </div>
+                        
+                        <div class="section-divider">
+                            <h3><i class="fas fa-display"></i> 显示设置</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>字体大小</label>
+                                    <select class="form-control" id="font-size">
+                                        <option value="small">较小</option>
+                                        <option value="medium" selected>中等</option>
+                                        <option value="large">较大</option>
+                                        <option value="xlarge">特大</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>页面切换速度</label>
+                                    <select class="form-control" id="transition-speed">
+                                        <option value="slow">慢速</option>
+                                        <option value="normal" selected>正常</option>
+                                        <option value="fast">快速</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>自动翻页时间（秒）</label>
+                                    <input type="number" class="form-control" id="auto-advance-time" value="30" min="10" max="300">
+                                </div>
+                                <div class="form-group">
+                                    <label>页面边距</label>
+                                    <select class="form-control" id="page-margin">
+                                        <option value="small">小边距</option>
+                                        <option value="medium" selected>中等边距</option>
+                                        <option value="large">大边距</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-divider">
+                            <h3><i class="fas fa-cog"></i> 功能设置</h3>
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="auto-advance">
+                                <label for="auto-advance">启用自动翻页</label>
+                            </div>
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="show-page-numbers" checked>
+                                <label for="show-page-numbers">显示页面编号</label>
+                            </div>
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="show-timer">
+                                <label for="show-timer">显示页面计时器</label>
+                            </div>
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="show-host-info" checked>
+                                <label for="show-host-info">显示主持人信息</label>
+                            </div>
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="enable-keyboard">
+                                <label for="enable-keyboard">启用键盘控制（方向键翻页）</label>
+                            </div>
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="enable-voice">
+                                <label for="enable-voice">启用语音控制（预留功能）</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 实时预览 -->
+                <div class="form-section" id="preview-section">
+                    <h2><i class="fas fa-eye"></i> 实时预览</h2>
+                    <p class="description">实时预览当前配置的显示效果</p>
+                    
+                    <div class="form-section-content">
+                        <div class="preview-area" id="preview-area">
+                            <div class="preview-placeholder">
+                                <i class="fas fa-sync-alt fa-spin" style="font-size: 48px; color: #3498db; margin-bottom: 20px;"></i>
+                                <h3>正在生成预览...</h3>
+                                <p>请稍候，系统正在准备预览内容</p>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" id="refresh-preview">
+                                <i class="fas fa-sync-alt"></i> 刷新预览
+                            </button>
+                            <button class="btn btn-success" id="open-preview">
+                                <i class="fas fa-external-link-alt"></i> 在新窗口预览
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 导入导出 -->
+                <div class="form-section" id="export-section">
+                    <h2><i class="fas fa-file-export"></i> 数据管理</h2>
+                    <p class="description">导入、导出配置文件，备份和恢复数据</p>
+                    
+                    <div class="form-section-content">
+                        <h3>导出配置</h3>
+                        <p>将当前配置导出为JSON文件，用于备份或迁移</p>
+                        <button class="btn btn-success" id="export-btn">
+                            <i class="fas fa-download"></i> 导出当前配置
+                        </button>
+                        
+                        <h3 style="margin-top: 30px;">导入配置</h3>
+                        <p>从JSON文件导入配置，恢复之前保存的设置</p>
+                        <div class="form-group">
+                            <label>选择配置文件</label>
+                            <input type="file" class="form-control" id="import-file" accept=".json">
+                        </div>
+                        <button class="btn btn-primary" id="import-btn">
+                            <i class="fas fa-upload"></i> 导入配置
+                        </button>
+                        
+                        <h3 style="margin-top: 30px;">重置系统</h3>
+                        <p>警告：此操作将清空所有当前配置，恢复为初始状态</p>
+                        <button class="btn btn-danger" id="reset-btn">
+                            <i class="fas fa-trash"></i> 重置所有配置
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 主操作按钮 -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="save-btn">
+                        <i class="fas fa-save"></i> 保存配置
+                    </button>
+                    <button class="btn btn-secondary" id="load-btn">
+                        <i class="fas fa-folder-open"></i> 重新加载
+                    </button>
+                    <button class="btn btn-success" id="apply-btn">
+                        <i class="fas fa-check-circle"></i> 应用到主页面
+                    </button>
+                    <button class="btn btn-danger" id="close-btn">
+                        <i class="fas fa-times"></i> 关闭配置
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar" id="status-bar">
+            <div id="status-text">🟢 系统就绪</div>
+            <div id="last-saved">最后保存：从未保存</div>
+        </div>
+        
+        <!-- 提示信息 -->
+        <div class="alert alert-success" id="success-alert">
+            <i class="fas fa-check-circle"></i> 操作成功！
+        </div>
+        <div class="alert alert-error" id="error-alert">
+            <i class="fas fa-exclamation-circle"></i> 操作失败！
+        </div>
+    </div>
+    
+    <!-- 引入配置管理器 -->
+    <script src="config-manager.js"></script>
+    
+    <script>
+        // 配置界面交互逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化配置管理器
+            const configManager = new ConfigManager();
+            configManager.initialize();
+            
+            // 导航切换
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有active类
+                    document.querySelectorAll('.nav-item').forEach(nav => {
+                        nav.classList.remove('active');
+                    });
+                    // 添加当前active类
+                    this.classList.add('active');
+                    
+                    // 切换内容区域
+                    const section = this.dataset.section;
+                    document.querySelectorAll('.form-section').forEach(sectionEl => {
+                        sectionEl.classList.remove('active');
+                    });
+                    document.getElementById(`${section}-section`).classList.add('active');
+                    
+                    // 如果是预览部分，更新预览
+                    if (section === 'preview') {
+                        configManager.refreshPreview();
+                    }
+                });
+            });
+            
+            // 添加歌曲按钮
+            document.getElementById('add-song-btn').addEventListener('click', function() {
+                configManager.addNewSong();
+            });
+            
+            // 添加报告按钮
+            document.getElementById('add-announcement-btn').addEventListener('click', function() {
+                configManager.addNewAnnouncement();
+            });
+            
+            // 添加主持人按钮
+            document.getElementById('add-host-btn').addEventListener('click', function() {
+                configManager.addNewHost();
+            });
+            
+            // 保存按钮
+            document.getElementById('save-btn').addEventListener('click', function() {
+                configManager.saveConfig();
+            });
+            
+            // 导出按钮
+            document.getElementById('export-btn').addEventListener('click', function() {
+                configManager.exportConfig();
+            });
+            
+            // 重置按钮
+            document.getElementById('reset-btn').addEventListener('click', function() {
+                if (confirm('⚠️ 警告：这将重置所有配置，恢复为初始状态！\n\n确定要重置吗？')) {
+                    configManager.resetConfig();
+                }
+            });
+            
+            // 刷新预览按钮
+            document.getElementById('refresh-preview').addEventListener('click', function() {
+                configManager.refreshPreview();
+            });
+            
+            // 打开预览按钮
+            document.getElementById('open-preview').addEventListener('click', function() {
+                configManager.openPreview();
+            });
+            
+            // 恢复页面顺序按钮
+            document.getElementById('reset-pages').addEventListener('click', function() {
+                configManager.resetPageOrder();
+            });
+            
+            // 关闭配置按钮
+            document.getElementById('close-btn').addEventListener('click', function() {
+                if (configManager.isDirty) {
+                    if (confirm('您有未保存的更改，确定要关闭吗？')) {
+                        window.close();
+                    }
+                } else {
+                    window.close();
+                }
+            });
+            
+            // 应用到主页面按钮
+            document.getElementById('apply-btn').addEventListener('click', function() {
+                configManager.saveConfig().then(() => {
+                    // 刷新主页面
+                    if (window.opener && !window.opener.closed) {
+                        window.opener.location.reload();
+                        alert('配置已应用到主页面！');
+                    } else {
+                        alert('配置已保存，请手动刷新主页面查看效果。');
+                    }
+                });
+            });
+            
+            // 重新加载按钮
+            document.getElementById('load-btn').addEventListener('click', function() {
+                if (configManager.isDirty) {
+                    if (confirm('您有未保存的更改，确定要重新加载吗？')) {
+                        configManager.loadConfig();
+                    }
+                } else {
+                    configManager.loadConfig();
+                }
+            });
+            
+            // 监听表单变化
+            document.querySelectorAll('.form-control, input[type="checkbox"], input[type="date"], input[type="time"], select').forEach(input => {
+                input.addEventListener('change', function() {
+                    configManager.markDirty();
+                });
+            });
+            
+            // 监听键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+S 保存
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    configManager.saveConfig();
+                }
+                // Esc 关闭
+                if (e.key === 'Escape') {
+                    document.getElementById('close-btn').click();
+                }
+            });
+            
+            console.log('配置界面初始化完成！');
+        });
+    </script>
+</body>
+</html>

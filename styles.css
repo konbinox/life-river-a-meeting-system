@@ -1,0 +1,1056 @@
+/* 基础样式 */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+    --light-color: #ecf0f1;
+    --dark-color: #2c3e50;
+    --success-color: #27ae60;
+    --warning-color: #f39c12;
+    
+    --font-size-small: 14px;
+    --font-size-medium: 16px;
+    --font-size-large: 24px;
+    --font-size-xlarge: 36px;
+    
+    --spacing-small: 8px;
+    --spacing-medium: 16px;
+    --spacing-large: 32px;
+    
+    --transition-speed: 0.3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+    background-color: #f5f5f5;
+    color: var(--dark-color);
+    line-height: 1.6;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* 控制栏样式 */
+#control-bar {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: var(--spacing-small) var(--spacing-medium);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.control-left, .control-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-small);
+}
+
+.control-center {
+    text-align: center;
+    flex-grow: 1;
+}
+
+#meeting-title {
+    font-size: var(--font-size-large);
+    color: var(--primary-color);
+    margin-bottom: 4px;
+}
+
+#meeting-info {
+    font-size: var(--font-size-small);
+    color: #666;
+}
+
+.control-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-speed);
+    font-size: var(--font-size-medium);
+}
+
+.control-btn:hover {
+    background-color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+#page-indicator {
+    font-weight: bold;
+    min-width: 60px;
+    text-align: center;
+}
+
+.timer {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+/* 主持人显示 */
+#host-display {
+    position: absolute;
+    top: 80px;
+    left: var(--spacing-medium);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-small);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: var(--spacing-small);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 900;
+}
+
+#host-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--secondary-color);
+}
+
+#host-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#host-info h2 {
+    font-size: var(--font-size-medium);
+    margin-bottom: 2px;
+}
+
+#host-info p {
+    font-size: var(--font-size-small);
+    color: #666;
+}
+
+/* 主内容区域 */
+#content-container {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-large);
+    position: relative;
+    overflow: hidden;
+}
+
+#current-page {
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    position: relative;
+}
+
+.page-content {
+    padding: var(--spacing-large);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    animation: fadeIn 0.5s ease;
+}
+
+/* 页面类型特定样式 */
+.page-welcome {
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.page-welcome h1 {
+    font-size: 4em;
+    margin-bottom: var(--spacing-medium);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.page-welcome .subtitle {
+    font-size: 2em;
+    opacity: 0.9;
+}
+
+.page-worship {
+    background-color: #f8f9fa;
+}
+
+.song-display {
+    text-align: center;
+    padding: var(--spacing-large);
+}
+
+.song-title {
+    font-size: 3em;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-large);
+}
+
+.lyrics-container {
+    font-size: 1.8em;
+    line-height: 1.8;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: var(--spacing-medium);
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.page-scripture {
+    background-color: #fffaf0;
+    text-align: center;
+}
+
+.scripture-text {
+    font-size: 2.5em;
+    line-height: 1.6;
+    margin-bottom: var(--spacing-large);
+    font-style: italic;
+}
+
+.scripture-reference {
+    font-size: 1.5em;
+    color: var(--secondary-color);
+    margin-top: var(--spacing-large);
+}
+
+/* 页面导航点 */
+#page-navigation {
+    position: absolute;
+    bottom: var(--spacing-medium);
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 800;
+}
+
+.nav-dots {
+    display: flex;
+    gap: var(--spacing-small);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: var(--spacing-small);
+    border-radius: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #ddd;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.nav-dot.active {
+    background-color: var(--secondary-color);
+    transform: scale(1.2);
+}
+
+.nav-dot:hover {
+    background-color: var(--primary-color);
+}
+
+/* 语音控制指示器 */
+#voice-indicator {
+    position: fixed;
+    bottom: 100px;
+    right: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-small);
+}
+
+.voice-pulse {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--success-color);
+    animation: pulse 1.5s infinite;
+}
+
+.voice-text {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-radius: 20px;
+    font-size: var(--font-size-small);
+}
+
+/* 动画 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    #control-bar {
+        flex-direction: column;
+        gap: var(--spacing-small);
+        padding: var(--spacing-small);
+    }
+    
+    .control-center {
+        order: 1;
+    }
+    
+    .control-left, .control-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    #host-display {
+        position: relative;
+        top: auto;
+        left: auto;
+        margin: var(--spacing-medium) auto;
+        max-width: 300px;
+    }
+    
+    .page-content {
+        padding: var(--spacing-medium);
+    }
+    
+    .song-title, .scripture-text {
+        font-size: 1.8em;
+    }
+}
+
+/* 工具类 */
+.hidden {
+    display: none !important;
+}
+
+.fullscreen {
+    height: 100vh;
+    width: 100vw;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* === 新增的页面样式 === */
+
+/* 圣餐页面 */
+.page-communion {
+    background: linear-gradient(135deg, #8b0000 0%, #4a0000 100%);
+    color: white;
+}
+
+.communion-container {
+    text-align: center;
+    padding: var(--spacing-large);
+}
+
+.communion-header {
+    margin-bottom: var(--spacing-large);
+}
+
+.communion-icon {
+    font-size: 4em;
+    margin: var(--spacing-medium) 0;
+}
+
+.communion-scripture {
+    font-style: italic;
+    font-size: 1.5em;
+    margin: var(--spacing-large) 0;
+    padding: var(--spacing-medium);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.communion-countdown {
+    margin: var(--spacing-large) 0;
+    padding: var(--spacing-medium);
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+}
+
+.countdown-timer {
+    font-family: 'Courier New', monospace;
+    font-size: 3em;
+    font-weight: bold;
+    color: #ffcc00;
+}
+
+/* 奉献页面 */
+.offering-container {
+    text-align: center;
+    padding: var(--spacing-large);
+}
+
+.offering-methods {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-large);
+    margin: var(--spacing-large) 0;
+    flex-wrap: wrap;
+}
+
+.offering-method {
+    background-color: white;
+    padding: var(--spacing-medium);
+    border-radius: 10px;
+    min-width: 250px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.qr-code img {
+    width: 200px;
+    height: 200px;
+    margin: var(--spacing-small) auto;
+}
+
+.bank-info {
+    text-align: left;
+    padding: var(--spacing-small);
+}
+
+/* 生日页面 */
+.page-birthday {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ffd166 100%);
+}
+
+.birthday-container {
+    text-align: center;
+    padding: var(--spacing-large);
+}
+
+.birthday-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-medium);
+    margin: var(--spacing-large) 0;
+}
+
+.birthday-person {
+    background-color: white;
+    padding: var(--spacing-medium);
+    border-radius: 15px;
+    min-width: 150px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.birthday-icon {
+    font-size: 2.5em;
+    margin-bottom: var(--spacing-small);
+}
+
+/* 结束页面 */
+.page-closing {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+}
+
+.closing-container {
+    text-align: center;
+    padding: var(--spacing-large);
+}
+
+.closing-blessing {
+    font-size: 1.8em;
+    margin: var(--spacing-large) 0;
+    padding: var(--spacing-medium);
+}
+
+.closing-info {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-large);
+    margin: var(--spacing-large) 0;
+    flex-wrap: wrap;
+}
+
+.closing-info div {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: var(--spacing-medium);
+    border-radius: 10px;
+    min-width: 200px;
+}
+
+/* 祷告页面 */
+.prayer-container {
+    padding: var(--spacing-large);
+    text-align: center;
+}
+
+.prayer-content {
+    font-size: 1.8em;
+    line-height: 1.8;
+    margin: var(--spacing-large) 0;
+}
+
+.prayer-points {
+    text-align: left;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    padding: var(--spacing-medium);
+    border-radius: 10px;
+}
+
+/* 见证页面 */
+.testimony-container {
+    padding: var(--spacing-large);
+}
+
+.testimony-speaker {
+    text-align: center;
+    margin-bottom: var(--spacing-large);
+    padding: var(--spacing-medium);
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
+
+.testimony-content {
+    font-size: 1.5em;
+    line-height: 1.8;
+    padding: var(--spacing-large);
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 视频页面 */
+.video-container {
+    text-align: center;
+    padding: var(--spacing-large);
+}
+
+.video-player {
+    margin: var(--spacing-large) 0;
+}
+
+.video-description {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-medium);
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
+
+/* 启应经文页面 */
+.responsive-reading-container {
+    padding: var(--spacing-large);
+}
+
+.reading-part {
+    margin: var(--spacing-large) 0;
+    padding: var(--spacing-medium);
+    border-radius: 10px;
+}
+
+.reading-part.leader {
+    background-color: #e3f2fd;
+    border-left: 5px solid #2196f3;
+}
+
+.reading-part.congregation {
+    background-color: #f1f8e9;
+    border-left: 5px solid #7cb342;
+}
+
+/* 信经页面 */
+.page-creed {
+    background-color: #fffaf0;
+}
+
+.creed-container {
+    padding: var(--spacing-large);
+    text-align: center;
+}
+
+.creed-content {
+    font-size: 1.8em;
+    line-height: 1.8;
+    margin: var(--spacing-large) 0;
+    text-align: left;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 儿童祝福页面 */
+.children-blessing-container {
+    text-align: center;
+    padding: var(--spacing-large);
+    background: linear-gradient(135deg, #ffcc80 0%, #ffab91 100%);
+}
+
+.children-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-medium);
+    margin: var(--spacing-large) 0;
+}
+
+.child-item {
+    background-color: white;
+    padding: var(--spacing-medium);
+    border-radius: 10px;
+    min-width: 120px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 家事报告页面 */
+.announcements-container {
+    padding: var(--spacing-large);
+}
+
+.announcements-list {
+    display: grid;
+    gap: var(--spacing-medium);
+    margin: var(--spacing-large) 0;
+}
+
+.announcement-item {
+    background-color: white;
+    padding: var(--spacing-medium);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #ddd;
+}
+
+.announcement-item.important {
+    border-left-color: var(--accent-color);
+    background-color: #fff8e1;
+}
+
+/* 信息分享页面 */
+.message-container {
+    padding: var(--spacing-large);
+}
+
+.current-point {
+    background-color: white;
+    padding: var(--spacing-large);
+    border-radius: 10px;
+    margin-bottom: var(--spacing-large);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.outline-list {
+    list-style: none;
+    padding: 0;
+}
+
+.outline-list li {
+    padding: var(--spacing-small);
+    margin: var(--spacing-small) 0;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.outline-list li.active {
+    background-color: var(--secondary-color);
+    color: white;
+    font-weight: bold;
+}
+
+/* 三一颂页面 */
+.doxology-container {
+    text-align: center;
+    padding: var(--spacing-large);
+    background-color: #f0f4ff;
+}
+
+.doxology-content {
+    font-size: 2em;
+    line-height: 1.8;
+    margin: var(--spacing-large) 0;
+}
+
+/* 主祷文页面 */
+.lords-prayer-container {
+    padding: var(--spacing-large);
+    background-color: #fffaf0;
+}
+
+.lords-prayer-content {
+    font-size: 2em;
+    line-height: 1.8;
+    text-align: center;
+    margin: var(--spacing-large) 0;
+}
+
+/* 事工报告页面 */
+.mission-report-container {
+    padding: var(--spacing-large);
+}
+
+.report-item {
+    background-color: white;
+    padding: var(--spacing-medium);
+    margin: var(--spacing-medium) 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid var(--secondary-color);
+}
+
+/* 特别献诗页面 */
+.special-music-container {
+    text-align: center;
+    padding: var(--spacing-large);
+    background-color: #f8f9fa;
+}
+
+.performer-info {
+    margin: var(--spacing-large) 0;
+    padding: var(--spacing-medium);
+    background-color: white;
+    border-radius: 10px;
+}
+
+/* 新会友页面 */
+.new-members-container {
+    text-align: center;
+    padding: var(--spacing-large);
+    background-color: #e8f5e9;
+}
+
+/* 洗礼页面 */
+.baptism-container {
+    text-align: center;
+    padding: var(--spacing-large);
+    background-color: #e3f2fd;
+}
+
+/* 结婚周年页面 */
+.wedding-anniversary-container {
+    text-align: center;
+    padding: var(--spacing-large);
+    background: linear-gradient(135deg, #ffccd5 0%, #ffb6c1 100%);
+}
+
+.couple-item {
+    background-color: white;
+    padding: var(--spacing-medium);
+    margin: var(--spacing-medium);
+    border-radius: 10px;
+    display: inline-block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+/* ===== 页面编辑器样式 ===== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+    width: 90%;
+    max-width: 600px;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content h2 {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.form-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.form-section h3 {
+    color: #495057;
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.song-edit-item,
+.announcement-edit-item {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: white;
+    transition: all 0.2s;
+}
+
+.song-edit-item:hover,
+.announcement-edit-item:hover {
+    border-color: #3498db;
+    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.2);
+}
+
+.song-edit-header,
+.announcement-edit-header {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.song-edit-header input[type="text"],
+.announcement-edit-header input[type="text"] {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.color-input-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.color-picker {
+    width: 50px;
+    height: 40px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.color-hex {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.no-special-content {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+/* 页面编辑器模态框 */
+#page-editor {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    overflow-y: auto;
+}
+
+#page-editor.show {
+    display: block;
+}
+
+.editor-modal-content {
+    position: relative;
+    background-color: #fff;
+    margin: 2rem auto;
+    max-width: 800px;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+#page-editor-content {
+    padding: 2rem;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* 编辑器头部 */
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.editor-header h3 {
+    margin: 0;
+    color: #343a40;
+}
+
+.page-type-badge {
+    background-color: #6f42c1;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* 编辑器分区 */
+.editor-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 0.375rem;
+    border: 1px solid #dee2e6;
+}
+
+.editor-section h4 {
+    color: #495057;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.editor-section h4 i {
+    color: #6c757d;
+}
+
+/* 类型特定字段 */
+.type-specific {
+    background-color: #e7f3ff;
+    border-color: #b3d7ff;
+}
+
+/* 动作按钮 */
+.editor-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.editor-actions .btn {
+    min-width: 120px;
+}
+
+/* 预览区域 */
+.song-preview h5,
+.announcements-preview h5 {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+/* 表单增强 */
+.form-control-color {
+    height: 2.5rem;
+    padding: 0.25rem;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .editor-modal-content {
+        margin: 1rem;
+        width: calc(100% - 2rem);
+    }
+    
+    #page-editor-content {
+        padding: 1rem;
+    }
+    
+    .editor-actions {
+        flex-direction: column;
+    }
+    
+    .editor-actions .btn {
+        width: 100%;
+    }
+}

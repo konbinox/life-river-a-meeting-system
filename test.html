@@ -1,0 +1,240 @@
+/**
+ * 配置管理器 - 完整修复版
+ * 保留原有功能 + 补齐缺失方法 + 扩展数据结构
+ */
+
+class ConfigManager {
+    constructor() {
+        this.currentData = null;
+        this.isDirty = false;
+        this.pageEditor = null;  // 实例变量，不是全局变量
+    }
+    
+    async initialize() {
+        console.log('初始化配置管理器...');
+        try {
+            await this.loadData();
+            this.initializeUI();
+            this.bindEvents();
+            this.pageEditor = new PageEditor(this); // 初始化页面编辑器
+            this.updateStatus();
+            console.log('配置管理器初始化完成');
+        } catch (error) {
+            console.error('初始化失败:', error);
+        }
+    }
+
+    async loadData() {
+        try {
+            const savedConfig = localStorage.getItem('churchMeetingConfig');
+            if (savedConfig) {
+                this.currentData = JSON.parse(savedConfig);
+                console.log('从本地存储加载配置');
+            } else {
+                this.currentData = this.getDefaultData();
+                console.log('使用默认配置');
+            }
+            this.ensureDataStructure();
+        } catch (error) {
+            console.error('加载数据失败，使用默认数据:', error);
+            this.currentData = this.getDefaultData();
+        }
+    }
+
+    ensureDataStructure() {
+        if (!this.currentData.meetingInfo) {
+            this.currentData.meetingInfo = {};
+        }
+        if (!this.currentData.pages) {
+            this.currentData.pages = this.getDefaultPages();
+        }
+        if (!this.currentData.settings) {
+            this.currentData.settings = {
+                background: { type: 'gradient', theme: 'blue' },
+                fontSize: 'medium'
+            };
+        }
+
+        // 🔧 确保每个页面都有完整字段，避免 PageEditor 保存时报错
+        if (Array.isArray(this.currentData.pages)) {
+            this.currentData.pages.forEach(page => {
+                if (!page.backgroundColor) page.backgroundColor = '#ffffff';
+                if (!page.textColor) page.textColor = '#000000';
+                if (!page.fontSize) page.fontSize = 'normal';
+                if (!page.align) page.align = 'center';
+                if (page.showTitle === undefined) page.showTitle = true;
+
+                // 确保 content 是对象
+                if (!page.content || typeof page.content !== 'object') {
+                    page.content = {};
+                }
+                // 类型特定默认值
+                if (page.type === 'worship' && !Array.isArray(page.content.songs)) {
+                    page.content.songs = [];
+                }
+                if (page.type === 'announcements' && !Array.isArray(page.content.items)) {
+                    page.content.items = [];
+                }
+            });
+        }
+    }
+
+    getDefaultData() {
+        return {
+            version: "1.0",
+            meetingInfo: {
+                date: new Date().toISOString().split('T')[0],
+                title: "主日崇拜",
+                theme: "",
+                time: "09:30",
+                location: "教会大堂",
+                host: { type: "selected", selectedId: null, options: [] }
+            },
+            pages: this.getDefaultPages(),
+            settings: {
+                background: { type: "gradient", theme: "blue" },
+                fontSize: "medium",
+                transitionSpeed: "normal"
+            }
+        };
+    }
+
+    getDefaultPages() {
+        return [
+            {
+                id: 'welcome_' + Date.now(),
+                title: '欢迎页',
+                type: 'welcome',
+                enabled: true,
+                order: 1,
+                content: { text: '欢迎参加今日主日崇拜', subtext: '在主爱中合一，在圣灵里敬拜' }
+            },
+            {
+                id: 'worship_' + Date.now(),
+                title: '敬拜赞美',
+                type: 'worship',
+                enabled: true,
+                order: 2,
+                content: { songs: [] }
+            },
+            {
+                id: 'announcements_' + Date.now(),
+                title: '家事报告',
+                type: 'announcements',
+                enabled: true,
+                order: 3,
+                content: { items: [] }
+            }
+        ];
+    }
+
+    // ====== UI 初始化方法 ======
+    initializeUI() {
+        this.initializeBasicInfo();
+        this.initializeHostOptions();
+        this.initializePageList();
+        this.initializeSongList();
+        this.initializeAnnouncementsList();
+        this.initializeSystemSettings();
+    }
+
+    initializeBasicInfo() {
+        if (!this.currentData.meetingInfo) return;
+        const setValue = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.value = value || '';
+        };
+        const data = this.currentData.meetingInfo;
+        setValue('meeting-date', data.date);
+        setValue('meeting-title', data.title);
+        setValue('meeting-theme', data.theme);
+        setValue('meeting-time', data.time || '09:30');
+        setValue('meeting-location', data.location);
+    }
+
+    initializeSystemSettings() {
+        if (!this.currentData.settings) return;
+        const setValue = (id, value) => {
+            const el = document.getElementById(id);
+            if (el && value !== undefined) el.value = value;
+        };
+        const settings = this.currentData.settings;
+        setValue('font-size', settings.fontSize || 'medium');
+        setValue('transition-speed', settings.transitionSpeed || 'normal');
+        setValue('auto-advance-time', settings.autoAdvanceTime || 30);
+    }
+
+    // ====== 事件绑定 ======
+    bindEvents() {
+        document.getElementById('add-host-btn')?.addEventListener('click', () => this.addNewHost());
+        document.getElementById('add-song-btn')?.addEventListener('click', () => this.addNewSong());
+        document.getElementById('add-announcement-btn')?.addEventListener('click', () => this.addNewAnnouncement());
+        document.getElementById('save-btn')?.addEventListener('click', () => this.saveConfig());
+        document.getElementById('load-btn')?.addEventListener('click', () => this.loadConfig());
+        document.getElementById('export-btn')?.addEventListener('click', () => this.exportConfig());
+        document.getElementById('reset-btn')?.addEventListener('click', () => {
+            if (confirm('确定要重置所有配置吗？')) this.resetConfig();
+        });
+        setTimeout(() => {
+            document.querySelectorAll('input, select, textarea').forEach(input => {
+                input.addEventListener('change', () => {
+                    this.isDirty = true;
+                    this.saveFormData();
+                });
+            });
+        }, 500);
+    }
+
+    // ====== 页面管理、主持人管理、歌曲管理、报告管理、存储功能 ======
+    // （保留你原有的 reorderPages、togglePageEnabled、deletePage、selectHost、addNewHost、
+    // addNewSong、deleteSong、addNewAnnouncement、deleteAnnouncement、saveConfig、loadConfig、
+    // exportConfig、resetConfig 等方法）
+
+    // ====== 新增修复方法 ======
+    markDirty() {
+        this.isDirty = true;
+        this.updateStatus();
+    }
+
+    showSuccess(message) {
+        alert(message); // 简单提示，后续可改成更优雅的提示条
+    }
+
+    updateStatus() {
+        const statusText = document.getElementById('status-text');
+        const lastSaved = document.getElementById('last-saved');
+        if (statusText) {
+            statusText.textContent = this.isDirty ? '未保存更改' : '已保存';
+        }
+        if (lastSaved && this.currentData?.lastUpdated) {
+            lastSaved.textContent = `最后保存: ${this.currentData.lastUpdated}`;
+        }
+    }
+
+    // ====== 预览相关方法 ======
+    refreshPreview() {
+        const container = document.getElementById('preview-area');
+        if (!container) return;
+        container.innerHTML = '';
+        const pages = (this.currentData?.pages || [])
+            .filter(p => p.enabled !== false)
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+        if (!pages.length) {
+            container.innerHTML = '<div class="preview-placeholder">暂无可预览页面</div>';
+            return;
+        }
+        const grid = document.createElement('div');
+        grid.className = 'preview-pages';
+        pages.forEach((p, idx) => {
+            const card = document.createElement('div');
+            card.className = 'preview-page';
+            card.innerHTML = `
+                <div class="preview-page-header">
+                    <span class="page-number">${idx + 1}</span>
+                    <strong>${p.title || '未命名'}</strong>
+                    <span class="page-type" style="margin-left:auto">${p.type}</span>
+                </div>
+                <div class="preview-page-body" style="
+                    background:${p.backgroundColor || '#fff'};
+                    color:${p.textColor || '#000'};
+                    text-align:${p.align || 'center'};

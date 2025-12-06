@@ -1,0 +1,381 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2024-01-07",
+  "meetingInfo": {
+    "date": "2024-01-07",
+    "title": "主日崇拜",
+    "theme": "在主爱中合一",
+    "host": {
+      "type": "selected",
+      "selectedId": "host2",
+      "options": [
+        {"id": "host1", "name": "王弟兄", "avatar": "host1.jpg"},
+        {"id": "host2", "name": "李姊妹", "avatar": "host2.jpg"},
+        {"id": "host3", "name": "张牧师", "avatar": "host3.jpg"},
+        {"id": "host4", "name": "陈长老", "avatar": "host4.jpg"},
+        {"id": "host5", "name": "刘弟兄", "avatar": "host5.jpg"},
+        {"id": "host6", "name": "杨姊妹", "avatar": "host6.jpg"}
+      ]
+    }
+  },
+  "pages": [
+    {
+      "id": "welcome",
+      "title": "欢迎页",
+      "type": "welcome",
+      "enabled": true,
+      "order": 1,
+      "content": {
+        "text": "欢迎参加今日主日崇拜",
+        "subtext": "在主爱中合一，在圣灵里敬拜",
+        "background": "welcome-bg.jpg",
+        "showTime": true,
+        "showDate": true
+      }
+    },
+    {
+      "id": "callToWorship",
+      "title": "宣召",
+      "type": "responsiveReading",
+      "enabled": true,
+      "order": 2,
+      "content": {
+        "title": "宣召",
+        "leaderPart": "你们要来，我们登耶和华的山，奔雅各神的殿。",
+        "congregationPart": "主必将他的道教训我们，我们也要行他的路。",
+        "scripture": "弥迦书 4:2"
+      }
+    },
+    {
+      "id": "worship",
+      "title": "敬拜赞美",
+      "type": "worship",
+      "enabled": true,
+      "order": 3,
+      "content": {
+        "songs": [
+          {
+            "id": "song1",
+            "title": "奇异恩典",
+            "lyrics": "奇异恩典，何等甘甜，我罪已得赦免；前我失丧，今被寻回，瞎眼今得看见。",
+            "key": "C",
+            "tempo": "舒缓",
+            "duration": 240
+          },
+          {
+            "id": "song2",
+            "title": "你真伟大",
+            "lyrics": "主啊我神，我每逢举目观看，你手所造一切奇妙大工...",
+            "key": "G",
+            "tempo": "激昂",
+            "duration": 180
+          }
+        ],
+        "currentSongIndex": 0,
+        "showLyrics": true
+      }
+    },
+    {
+      "id": "prayer",
+      "title": "开始祷告",
+      "type": "prayer",
+      "enabled": true,
+      "order": 4,
+      "content": {
+        "title": "开始祷告",
+        "text": "亲爱的天父，我们感谢赞美你！谢谢你带领我们来到你的面前...",
+        "prayerPoints": ["为今天的聚会", "为讲员", "为会众"],
+        "instruction": "请同心开声祷告"
+      }
+    },
+    {
+      "id": "responsiveReading",
+      "title": "启应经文",
+      "type": "responsiveReading",
+      "enabled": true,
+      "order": 5,
+      "content": {
+        "title": "诗篇 100篇",
+        "leaderPart": "普天下当向耶和华欢呼！你们当乐意事奉耶和华，当来向他歌唱！",
+        "congregationPart": "你们当晓得耶和华是神！我们是他造的，也是属他的；我们是他的民，也是他草场的羊。",
+        "scripture": "诗篇 100:1-3"
+      }
+    },
+    {
+      "id": "creed",
+      "title": "使徒信经",
+      "type": "creed",
+      "enabled": true,
+      "order": 6,
+      "content": {
+        "title": "使徒信经",
+        "text": "我信上帝，全能的父，创造天地的主..."
+      }
+    },
+    {
+      "id": "specialMusic",
+      "title": "特别献诗",
+      "type": "specialMusic",
+      "enabled": true,
+      "order": 7,
+      "content": {
+        "title": "诗班献诗",
+        "songTitle": "圣哉圣哉圣哉",
+        "performers": "教会诗班",
+        "description": "三一颂"
+      }
+    },
+    {
+      "id": "scripture",
+      "title": "经文分享",
+      "type": "scripture",
+      "enabled": true,
+      "order": 8,
+      "content": {
+        "reference": "约翰福音 3:16",
+        "text": "神爱世人，甚至将他的独生子赐给他们，叫一切信他的，不至灭亡，反得永生。",
+        "version": "和合本",
+        "showReference": true,
+        "showVersion": true
+      }
+    },
+    {
+      "id": "message",
+      "title": "信息分享",
+      "type": "message",
+      "enabled": true,
+      "order": 9,
+      "content": {
+        "title": "在基督里的新生命",
+        "speaker": "张牧师",
+        "outline": [
+          {"id": "point1", "title": "一、老我的死去", "content": "与基督同钉十字架"},
+          {"id": "point2", "title": "二、新我的活出", "content": "在圣灵里得新生"},
+          {"id": "point3", "title": "三、生活的实践", "content": "活出基督的样式"}
+        ],
+        "currentPointIndex": 0
+      }
+    },
+    {
+      "id": "testimony",
+      "title": "见证分享",
+      "type": "testimony",
+      "enabled": true,
+      "order": 10,
+      "content": {
+        "speaker": {
+          "name": "李弟兄",
+          "title": "新受洗信徒"
+        },
+        "title": "主的恩典够我用",
+        "content": "我要述说主在我身上的作为，从前我是一个迷失的人..."
+      }
+    },
+    {
+      "id": "childrenBlessing",
+      "title": "儿童祝福",
+      "type": "childrenBlessing",
+      "enabled": true,
+      "order": 11,
+      "content": {
+        "children": [
+          {"name": "小明", "age": 5},
+          {"name": "小红", "age": 7}
+        ],
+        "blessing": "耶稣说：'让小孩子到我这里来，不要禁止他们'"
+      }
+    },
+    {
+      "id": "newMembers",
+      "title": "新会友",
+      "type": "newMembers",
+      "enabled": false,
+      "order": 12,
+      "content": {
+        "members": [],
+        "welcomeMessage": "欢迎加入教会大家庭"
+      }
+    },
+    {
+      "id": "baptism",
+      "title": "洗礼",
+      "type": "baptism",
+      "enabled": false,
+      "order": 13,
+      "content": {
+        "candidates": [],
+        "scripture": "所以，你们要去，使万民作我的门徒，奉父、子、圣灵的名给他们施洗。"
+      }
+    },
+    {
+      "id": "weddingAnniversary",
+      "title": "结婚周年",
+      "type": "weddingAnniversary",
+      "enabled": false,
+      "order": 14,
+      "content": {
+        "couples": [],
+        "blessing": "愿耶和华赐福给你们，愿你们白头偕老"
+      }
+    },
+    {
+      "id": "announcements",
+      "title": "家事报告",
+      "type": "announcements",
+      "enabled": true,
+      "order": 15,
+      "content": {
+        "items": [
+          {
+            "id": "ann1",
+            "title": "周二祷告会",
+            "content": "每周二晚7:30在教会大堂举行",
+            "important": true
+          },
+          {
+            "id": "ann2",
+            "title": "青年团契",
+            "content": "本周五晚7:00有特别聚会",
+            "important": false
+          }
+        ],
+        "style": "list"
+      }
+    },
+    {
+      "id": "missionReport",
+      "title": "事工报告",
+      "type": "missionReport",
+      "enabled": true,
+      "order": 16,
+      "content": {
+        "reports": [
+          {
+            "title": "短宣队报告",
+            "content": "上个月的云南短宣蒙神保守，有5人决志信主",
+            "reporter": "王弟兄"
+          }
+        ]
+      }
+    },
+    {
+      "id": "offering",
+      "title": "奉献",
+      "type": "offering",
+      "enabled": true,
+      "order": 17,
+      "content": {
+        "text": "各人要随本心所酌定的，不要作难，不要勉强",
+        "scripture": "哥林多后书 9:7",
+        "qrCode": "offering-qr.jpg",
+        "bankInfo": {
+          "bank": "XX银行",
+          "account": "1234-5678-9012",
+          "name": "XX教会"
+        }
+      }
+    },
+    {
+      "id": "communion",
+      "title": "圣餐",
+      "type": "communion",
+      "enabled": false,
+      "order": 18,
+      "content": {
+        "text": "我们擘饼，为的是记念主",
+        "scripture": "哥林多前书 11:23-26",
+        "instructions": "请安静预备心，领受主的饼和杯",
+        "showCountdown": true,
+        "countdownDuration": 300
+      }
+    },
+    {
+      "id": "birthday",
+      "title": "生日祝福",
+      "type": "birthday",
+      "enabled": false,
+      "order": 19,
+      "content": {
+        "birthdayPersons": [
+          {"name": "张三", "birthdate": "01-07"},
+          {"name": "李四", "birthdate": "01-08"}
+        ],
+        "blessing": "愿耶和华赐福给你，保护你！",
+        "showAges": false
+      }
+    },
+    {
+      "id": "lordsPrayer",
+      "title": "主祷文",
+      "type": "lordsPrayer",
+      "enabled": true,
+      "order": 20,
+      "content": {
+        "title": "主祷文",
+        "text": "我们在天上的父，愿人都尊你的名为圣..."
+      }
+    },
+    {
+      "id": "doxology",
+      "title": "三一颂",
+      "type": "doxology",
+      "enabled": true,
+      "order": 21,
+      "content": {
+        "title": "三一颂",
+        "text": "赞美真神万福之源，世上万民都当颂赞..."
+      }
+    },
+    {
+      "id": "benediction",
+      "title": "祝福祷告",
+      "type": "benediction",
+      "enabled": true,
+      "order": 22,
+      "content": {
+        "title": "祝福祷告",
+        "text": "愿赐平安的神亲自使你们全然成圣..."
+      }
+    },
+    {
+      "id": "closing",
+      "title": "结束祝福",
+      "type": "closing",
+      "enabled": true,
+      "order": 23,
+      "content": {
+        "blessing": "愿主耶稣基督的恩惠，神的慈爱，圣灵的感动，常与你们众人同在！",
+        "scripture": "哥林多后书 13:14",
+        "dismissalTime": "12:00",
+        "nextMeeting": "下周日早上9:30"
+      }
+    }
+  ],
+  "settings": {
+    "theme": "light",
+    "fontSize": "medium",
+    "transitionSpeed": "normal",
+    "autoAdvance": false,
+    "autoAdvanceTime": 30,
+    "showPageNumbers": true,
+    "voiceControl": {
+      "enabled": false,
+      "language": "zh-CN",
+      "commands": ["next", "previous", "start", "pause"]
+    }
+  },
+  "media": {
+    "videos": [
+      {
+        "id": "video1",
+        "title": "欢迎视频",
+        "url": "https://www.youtube.com/watch?v=example",
+        "type": "youtube",
+        "startTime": 0,
+        "duration": 60
+      }
+    ],
+    "images": [],
+    "audio": []
+  }
+}
