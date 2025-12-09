@@ -14,6 +14,14 @@ class ChurchMeetingApp {
         this.voiceControlActive = false;
         this.resetMode = false; // 新增：复位模式标记
         
+        // 修复：绑定方法到正确的this上下文
+        this.prevPage = this.prevPage.bind(this);
+        this.nextPage = this.nextPage.bind(this);
+        this.toggleFullscreen = this.toggleFullscreen.bind(this);
+        this.openConfig = this.openConfig.bind(this);
+        this.toggleVoiceControl = this.toggleVoiceControl.bind(this);
+        this.confirmReset = this.confirmReset.bind(this);
+        
         this.initializeApp();
     }
     
@@ -45,69 +53,86 @@ class ChurchMeetingApp {
     }
     
     async loadData() {
-    try {
-        // 首先尝试从localStorage加载
-        const savedConfig = localStorage.getItem('churchMeetingConfig');
-        
-        if (savedConfig) {
-            this.meetingData = JSON.parse(savedConfig);
-            console.log('从本地存储加载数据');
-            
-            // 新增：数据完整性检查
-            if (!this.meetingData.pages || !Array.isArray(this.meetingData.pages)) {
-                console.warn('pages数据损坏，使用默认页面');
-                this.meetingData.pages = this.getDefaultData().pages;
+        try {
+            // 1. 只从文件加载
+            const response = await fetch('content.json');
+            if (!response.ok) throw new Error(`文件加载失败: ${response.status}`);
+            const fileData = await response.json();
+
+            // 2. 数据完整性检查（关键！）
+            if (!fileData.pages || !Array.isArray(fileData.pages)) {
+                console.warn('文件中的pages字段无效，使用默认数据');
+                throw new Error('Invalid pages data');
             }
-            
-            // 新增：确保所有页面都有enabled属性
+
+            // 3. 使用文件数据
+            this.meetingData = fileData;
+
+            // 4. 关键步骤：确保启用状态并计算总页数
+            // 这里假设文件里有些页面的 "enabled" 为 false，所以需要过滤
             this.meetingData.pages.forEach(page => {
-                if (page.enabled === undefined) {
-                    page.enabled = true;
-                }
+                if (page.enabled === undefined) page.enabled = true; // 默认启用
             });
             
-        } else {
-            // 如果本地没有，从文件加载
-            const response = await fetch('content.json');
-            if (!response.ok) {
-                throw new Error(`HTTP错误: ${response.status}`);
-            }
-            this.meetingData = await response.json();
-            console.log('从文件加载数据');
+            // 计算启用的页面总数
+            this.totalPages = this.meetingData.pages.filter(page => page.enabled).length;
+            
+            console.log(`✅ 数据加载完成。总页面数：${this.meetingData.pages.length}，启用页面数：${this.totalPages}`);
+
+        } catch (error) {
+            console.error('❌ 加载失败，使用默认数据:', error);
+            // 修复：使用正确的默认数据方法
+            this.meetingData = this.getDefaultData();
+            this.totalPages = this.meetingData.pages.filter(page => page.enabled !== false).length;
         }
-        
-        this.totalPages = this.meetingData.pages.filter(page => page.enabled).length;
-        
-        console.log('数据加载成功:', this.meetingData);
-        
-    } catch (error) {
-        console.error('加载数据失败:', error);
-        // 使用默认数据
-        this.meetingData = this.getDefaultData();
-        this.totalPages = this.meetingData.pages.filter(page => page.enabled).length;
     }
-}
     
     getDefaultData() {
+        // 修复：提供完整的24页默认数据
+        const timestamp = Date.now();
         return {
             meetingInfo: {
                 date: new Date().toISOString().split('T')[0],
                 title: '主日崇拜',
-                theme: '在主爱中合一'
+                theme: '在主爱中合一',
+                host: {
+                    selectedId: 'default',
+                    options: [
+                        { id: 'default', name: '主持人', avatar: '' }
+                    ]
+                }
             },
             pages: [
-                {
-                    id: 'welcome',
-                    title: '欢迎页',
-                    type: 'welcome',
-                    enabled: true,
-                    order: 1,
-                    content: {
-                        text: '欢迎参加今日主日崇拜',
-                        subtext: '请预备心来敬拜神'
-                    }
-                }
-            ]
+                { id: 'welcome_' + timestamp, title: '欢迎页', type: 'welcome', enabled: true, order: 1, content: { text: '欢迎参加主日崇拜', subtext: '在主爱中合一敬拜' } },
+                { id: 'call_' + timestamp, title: '宣召', type: 'scripture', enabled: true, order: 2, content: { text: '你们要赞美耶和华！在神的圣所赞美他！在他显能力的穹苍赞美他！', reference: '诗篇 150:1' } },
+                { id: 'opening_prayer_' + timestamp, title: '开祷', type: 'prayer', enabled: true, order: 3, content: { title: '开堂祷告', text: '亲爱的天父，我们感谢赞美你...' } },
+                { id: 'hymn1_' + timestamp, title: '赞美诗', type: 'worship', enabled: true, order: 4, content: { songs: [{ title: '圣哉三一歌', key: 'C', tempo: '中板' }], showLyrics: true } },
+                { id: 'hymn2_' + timestamp, title: '敬拜诗', type: 'worship', enabled: true, order: 5, content: { songs: [{ title: '你真伟大', key: 'G', tempo: '慢板' }], showLyrics: true } },
+                { id: 'scripture_reading_' + timestamp, title: '读经', type: 'scripture', enabled: true, order: 6, content: { text: '神爱世人，甚至将他的独生子赐给他们，叫一切信他的，不至灭亡，反得永生。', reference: '约翰福音 3:16' } },
+                { id: 'special_music_' + timestamp, title: '特别献诗', type: 'specialMusic', enabled: true, order: 7, content: { performers: '诗班', songTitle: '奇异恩典' } },
+                { id: 'pastoral_prayer_' + timestamp, title: '牧祷', type: 'prayer', enabled: true, order: 8, content: { title: '牧者祷告', text: '求主祝福我们的聚会...' } },
+                { id: 'announcements_' + timestamp, title: '家事报告', type: 'announcements', enabled: true, order: 9, content: { items: [{ title: '欢迎新朋友', content: '欢迎第一次参加的朋友', important: true }] } },
+                { id: 'offering_' + timestamp, title: '奉献', type: 'offering', enabled: true, order: 10, content: { text: '各人要随本心所酌定的，不要作难，不要勉强', scripture: '哥林多后书 9:7' } },
+                { id: 'offering_hymn_' + timestamp, title: '奉献诗歌', type: 'worship', enabled: true, order: 11, content: { songs: [{ title: '献上感恩', key: 'D', tempo: '中板' }], showLyrics: true } },
+                { id: 'scripture_' + timestamp, title: '经文', type: 'scripture', enabled: true, order: 12, content: { text: '因为罪的工价乃是死；惟有神的恩赐，在我们的主基督耶稣里，乃是永生。', reference: '罗马书 6:23' } },
+                { id: 'message_' + timestamp, title: '证道', type: 'message', enabled: true, order: 13, content: { title: '在主爱中合一', speaker: '讲员', outline: ['引言', '本论', '结论'] } },
+                { id: 'communion_' + timestamp, title: '圣餐', type: 'communion', enabled: true, order: 14, content: { instructions: '请安静预备心，领受主的饼和杯' } },
+                { id: 'testimony_' + timestamp, title: '见证', type: 'testimony', enabled: true, order: 15, content: { speaker: { name: '见证人' }, content: '我要述说主在我身上的作为...' } },
+                { id: 'baptism_' + timestamp, title: '洗礼', type: 'baptism', enabled: true, order: 16, content: { scripture: '所以，你们要去，使万民作我的门徒，奉父、子、圣灵的名给他们施洗。' } },
+                { id: 'new_members_' + timestamp, title: '迎新会友', type: 'newMembers', enabled: true, order: 17, content: { welcomeMessage: '欢迎加入教会大家庭' } },
+                { id: 'birthdays_' + timestamp, title: '生日祝福', type: 'birthday', enabled: true, order: 18, content: { birthdayPersons: [{ name: '张三', birthdate: '1990-01-01' }] } },
+                { id: 'children_blessing_' + timestamp, title: '儿童祝福', type: 'childrenBlessing', enabled: true, order: 19, content: { children: [{ name: '小明', age: 5 }] } },
+                { id: 'lords_prayer_' + timestamp, title: '主祷文', type: 'lordsPrayer', enabled: true, order: 20, content: { title: '主祷文' } },
+                { id: 'closing_hymn_' + timestamp, title: '回应诗', type: 'worship', enabled: true, order: 21, content: { songs: [{ title: '再相会歌', key: 'F', tempo: '中板' }], showLyrics: true } },
+                { id: 'benediction_' + timestamp, title: '祝福', type: 'benediction', enabled: true, order: 22, content: { title: '祝福祷告', text: '愿赐平安的神亲自使你们全然成圣！' } },
+                { id: 'doxology_' + timestamp, title: '三一颂', type: 'doxology', enabled: true, order: 23, content: { title: '三一颂' } },
+                { id: 'closing_' + timestamp, title: '散会', type: 'closing', enabled: true, order: 24, content: { blessing: '愿主耶稣基督的恩惠，神的慈爱，圣灵的感动，常与你们众人同在！' } }
+            ],
+            settings: {
+                background: { type: "gradient", theme: "blue" },
+                fontSize: "medium",
+                transitionSpeed: "normal"
+            }
         };
     }
     
@@ -252,8 +277,14 @@ getPatternStyle(background) {
     const pattern = patterns[type] || patterns.cross;
     return `${pattern}; background-size: 20px 20px;`;
 }
+    
     createNavigationDots() {
         const navContainer = document.querySelector('.nav-dots');
+        if (!navContainer) {
+            console.error('找不到 .nav-dots 容器');
+            return;
+        }
+        
         navContainer.innerHTML = '';
         
         const enabledPages = this.meetingData.pages.filter(page => page.enabled);
@@ -278,76 +309,113 @@ getPatternStyle(background) {
     }
     
     bindEvents() {
-        // 上一页/下一页按钮
-        document.getElementById('prev-btn').addEventListener('click', () => {
-            this.prevPage();
-        });
+        // 修复：使用正确的this上下文
+        const self = this;
         
-        document.getElementById('next-btn').addEventListener('click', () => {
-            this.nextPage();
-        });
+        // 上一页/下一页按钮
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                console.log('上一页按钮点击');
+                self.prevPage();
+            });
+        } else {
+            console.error('找不到 prev-btn 按钮');
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                console.log('下一页按钮点击');
+                self.nextPage();
+            });
+        } else {
+            console.error('找不到 next-btn 按钮');
+        }
         
         // 键盘控制
         document.addEventListener('keydown', (e) => {
             switch(e.key) {
                 case 'ArrowLeft':
                 case 'PageUp':
-                    this.prevPage();
+                    e.preventDefault();
+                    self.prevPage();
                     break;
                 case 'ArrowRight':
                 case 'PageDown':
                 case ' ':
-                    this.nextPage();
+                    e.preventDefault();
+                    self.nextPage();
                     break;
                 case 'Home':
-                    this.showPage(0);
+                    e.preventDefault();
+                    self.showPage(0);
                     break;
                 case 'End':
-                    this.showPage(this.totalPages - 1);
+                    e.preventDefault();
+                    self.showPage(self.totalPages - 1);
                     break;
                 case 'f':
                 case 'F':
                     if (e.ctrlKey) {
-                        this.toggleFullscreen();
+                        e.preventDefault();
+                        self.toggleFullscreen();
                     }
                     break;
                 case 'r':
                 case 'R':
                     if (e.ctrlKey) {
                         e.preventDefault();
-                        this.confirmReset();
+                        self.confirmReset();
                     }
                     break;
             }
         });
         
         // 全屏按钮
-        document.getElementById('fullscreen-btn').addEventListener('click', () => {
-            this.toggleFullscreen();
-        });
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        if (fullscreenBtn) {
+            fullscreenBtn.addEventListener('click', () => {
+                console.log('全屏按钮点击');
+                self.toggleFullscreen();
+            });
+        }
         
         // 配置按钮
-        document.getElementById('config-btn').addEventListener('click', () => {
-            this.openConfig();
-        });
+        const configBtn = document.getElementById('config-btn');
+        if (configBtn) {
+            configBtn.addEventListener('click', () => {
+                console.log('配置按钮点击');
+                self.openConfig();
+            });
+        }
         
         // 语音控制按钮
-        document.getElementById('voice-toggle').addEventListener('click', () => {
-            this.toggleVoiceControl();
-        });
+        const voiceToggle = document.getElementById('voice-toggle');
+        if (voiceToggle) {
+            voiceToggle.addEventListener('click', () => {
+                console.log('语音控制按钮点击');
+                self.toggleVoiceControl();
+            });
+        }
         
         // 新增：复位按钮事件
         const resetBtn = document.getElementById('reset-btn');
         if (resetBtn) {
             resetBtn.addEventListener('click', () => {
-                this.confirmReset();
+                console.log('复位按钮点击');
+                self.confirmReset();
             });
+        } else {
+            console.warn('找不到 reset-btn 按钮');
         }
     }
     
     showPage(pageIndex) {
         // 边界检查
         if (pageIndex < 0 || pageIndex >= this.totalPages) {
+            console.warn('页面索引超出范围:', pageIndex);
             return;
         }
         
@@ -373,10 +441,17 @@ getPatternStyle(background) {
         
         // 开始新页面的计时器
         this.startPageTimer();
+        
+        console.log(`显示页面: ${pageIndex + 1}/${this.totalPages} - ${targetPage.title}`);
     }
     
     displayPageContent(page) {
         const contentContainer = document.querySelector('.page-content');
+        
+        if (!contentContainer) {
+            console.error('找不到 .page-content 容器');
+            return;
+        }
         
         // 根据页面类型显示不同内容
         switch(page.type) {
@@ -494,7 +569,7 @@ getPatternStyle(background) {
     }
     
     renderWorshipPage(content) {
-        const currentSong = content.songs[content.currentSongIndex || 0];
+        const currentSong = content.songs && content.songs[content.currentSongIndex || 0];
         
         if (!currentSong) {
             return '<div class="no-song">暂无歌曲信息</div>';
@@ -502,7 +577,7 @@ getPatternStyle(background) {
         
         return `
             <div class="song-display">
-                <h2 class="song-title">${currentSong.title}</h2>
+                <h2 class="song-title">${currentSong.title || '诗歌'}</h2>
                 
                 <div class="song-meta">
                     <span class="song-key">调性: ${currentSong.key || 'C'}</span>
@@ -524,89 +599,89 @@ getPatternStyle(background) {
         `;
     }
     
-        renderScripturePage(content) {
-            // 兼容两种数据结构
-            let text = '', reference = '', version = '';
-            let showReference = content.showReference !== false;
-            let showVersion = content.showVersion !== false;
+    renderScripturePage(content) {
+        // 兼容两种数据结构
+        let text = '', reference = '', version = '';
+        let showReference = content.showReference !== false;
+        let showVersion = content.showVersion !== false;
 
-            // 格式1：直接字段（来自 content.json）
-            if (content.text) {
-                text = content.text;
-                reference = content.reference || '';
-                version = content.version || '';
-            }
-            // 格式2：嵌套字段（来自 config-manager）
-            else if (content.scripture && content.scripture.text) {
-                text = content.scripture.text;
-                reference = `${content.scripture.book || ''} ${content.scripture.chapter || ''}:${content.scripture.verse || ''}`.trim();
-                version = content.scripture.translation || '';
-            }
+        // 格式1：直接字段（来自 content.json）
+        if (content.text) {
+            text = content.text;
+            reference = content.reference || '';
+            version = content.version || '';
+        }
+        // 格式2：嵌套字段（来自 config-manager）
+        else if (content.scripture && content.scripture.text) {
+            text = content.scripture.text;
+            reference = `${content.scripture.book || ''} ${content.scripture.chapter || ''}:${content.scripture.verse || ''}`.trim();
+            version = content.scripture.translation || '';
+        }
 
-            return `
-                <div class="scripture-container">
-                    <h2 class="scripture-title">经文</h2>
-                    <div class="scripture-text">
-                        ${text || '经文内容'}
+        return `
+            <div class="scripture-container">
+                <h2 class="scripture-title">经文</h2>
+                <div class="scripture-text">
+                    ${text || '经文内容'}
+                </div>
+                ${showReference && reference ? `
+                    <div class="scripture-reference">
+                        ${reference}${showVersion && version ? ` (${version})` : ''}
                     </div>
-                    ${showReference && reference ? `
-                        <div class="scripture-reference">
-                            ${reference}${showVersion && version ? ` (${version})` : ''}
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-        }
+                ` : ''}
+            </div>
+        `;
+    }
     
-        renderMessagePage(content) {
-            // 兼容 outline 为对象数组（content.json）或字符串（config-manager）
-            let outlineItems = [];
-            if (Array.isArray(content.outline)) {
-                outlineItems = content.outline.map(item => {
-                    if (typeof item === 'string') {
-                        return { title: item, content: '' };
-                    }
-                    return {
-                        title: item.title || '',
-                        content: item.content || ''
-                    };
-                });
-            } else if (typeof content.outline === 'string') {
-                outlineItems = content.outline
-                    .split('\n')
-                    .map(line => line.trim())
-                    .filter(line => line)
-                    .map(line => ({ title: line, content: '' }));
-            }
-
-            const currentIdx = Math.min(content.currentPointIndex || 0, outlineItems.length - 1);
-            const currentPoint = outlineItems[currentIdx] || { title: '', content: '' };
-
-            return `
-                <div class="message-container">
-                    <h2 class="message-title">${content.title || '信息分享'}</h2>
-                    <p class="message-speaker">讲员: ${content.speaker || '讲员'}</p>
-                    ${currentPoint.title ? `
-                        <div class="current-point">
-                            <h3 class="point-title">${currentPoint.title}</h3>
-                            ${currentPoint.content ? `<p class="point-content">${currentPoint.content}</p>` : ''}
-                        </div>
-                    ` : ''}
-                    ${outlineItems.length > 0 ? `
-                        <div class="message-outline">
-                            <h4>大纲:</h4>
-                            <ul class="outline-list">
-                                ${outlineItems.map((point, index) => `
-                                    <li class="${index === currentIdx ? 'active' : ''}">
-                                        ${point.title}
-                                    </li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
+    renderMessagePage(content) {
+        // 兼容 outline 为对象数组（content.json）或字符串（config-manager）
+        let outlineItems = [];
+        if (Array.isArray(content.outline)) {
+            outlineItems = content.outline.map(item => {
+                if (typeof item === 'string') {
+                    return { title: item, content: '' };
+                }
+                return {
+                    title: item.title || '',
+                    content: item.content || ''
+                };
+            });
+        } else if (typeof content.outline === 'string') {
+            outlineItems = content.outline
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line)
+                .map(line => ({ title: line, content: '' }));
         }
+
+        const currentIdx = Math.min(content.currentPointIndex || 0, outlineItems.length - 1);
+        const currentPoint = outlineItems[currentIdx] || { title: '', content: '' };
+
+        return `
+            <div class="message-container">
+                <h2 class="message-title">${content.title || '信息分享'}</h2>
+                <p class="message-speaker">讲员: ${content.speaker || '讲员'}</p>
+                ${currentPoint.title ? `
+                    <div class="current-point">
+                        <h3 class="point-title">${currentPoint.title}</h3>
+                        ${currentPoint.content ? `<p class="point-content">${currentPoint.content}</p>` : ''}
+                    </div>
+                ` : ''}
+                ${outlineItems.length > 0 ? `
+                    <div class="message-outline">
+                        <h4>大纲:</h4>
+                        <ul class="outline-list">
+                            ${outlineItems.map((point, index) => `
+                                <li class="${index === currentIdx ? 'active' : ''}">
+                                    ${point.title}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
     
     renderAnnouncementsPage(content) {
         return `
@@ -1124,27 +1199,35 @@ getPatternStyle(background) {
     }
     
     extractYouTubeId(url) {
-        // 简单的YouTube ID提取
+        if (!url) return '';
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
         const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
+        return (match && match[2].length === 11) ? match[2] : '';
     }
     
     prevPage() {
+        console.log('prevPage 方法调用, currentIndex:', this.currentPageIndex);
         if (this.currentPageIndex > 0) {
             this.showPage(this.currentPageIndex - 1);
+        } else {
+            console.log('已经是第一页');
         }
     }
     
     nextPage() {
+        console.log('nextPage 方法调用, currentIndex:', this.currentPageIndex);
         if (this.currentPageIndex < this.totalPages - 1) {
             this.showPage(this.currentPageIndex + 1);
+        } else {
+            console.log('已经是最后一页');
         }
     }
     
     updatePageIndicator() {
-        document.getElementById('page-indicator').textContent = 
-            `${this.currentPageIndex + 1} / ${this.totalPages}`;
+        const indicator = document.getElementById('page-indicator');
+        if (indicator) {
+            indicator.textContent = `${this.currentPageIndex + 1} / ${this.totalPages}`;
+        }
     }
     
     updateNavigationDots() {
@@ -1177,42 +1260,56 @@ getPatternStyle(background) {
     updateTimer() {
         if (!this.pageStartTime) return;
         
+        const timerElement = document.getElementById('timer');
+        if (!timerElement) return;
+        
         const elapsed = Math.floor((Date.now() - this.pageStartTime) / 1000);
         const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
         const seconds = (elapsed % 60).toString().padStart(2, '0');
         
-        document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+        timerElement.textContent = `${minutes}:${seconds}`;
     }
     
     toggleFullscreen() {
+        console.log('切换全屏');
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch(err => {
                 console.error('全屏失败:', err);
             });
             this.isFullscreen = true;
-            document.getElementById('fullscreen-btn').innerHTML = '<i class="fas fa-compress"></i>';
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            if (fullscreenBtn) {
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+            }
         } else {
             document.exitFullscreen();
             this.isFullscreen = false;
-            document.getElementById('fullscreen-btn').innerHTML = '<i class="fas fa-expand"></i>';
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            if (fullscreenBtn) {
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+            }
         }
     }
     
     openConfig() {
+        console.log('打开配置页面');
         window.open('config.html', '_blank', 'width=800,height=600');
     }
     
     toggleVoiceControl() {
+        console.log('切换语音控制');
         this.voiceControlActive = !this.voiceControlActive;
         const voiceIndicator = document.getElementById('voice-indicator');
         
         if (this.voiceControlActive) {
-            voiceIndicator.classList.remove('hidden');
-            document.getElementById('voice-toggle').innerHTML = '<i class="fas fa-microphone-slash"></i>';
+            if (voiceIndicator) voiceIndicator.classList.remove('hidden');
+            const voiceToggle = document.getElementById('voice-toggle');
+            if (voiceToggle) voiceToggle.innerHTML = '<i class="fas fa-microphone-slash"></i>';
             this.startVoiceControl();
         } else {
-            voiceIndicator.classList.add('hidden');
-            document.getElementById('voice-toggle').innerHTML = '<i class="fas fa-microphone"></i>';
+            if (voiceIndicator) voiceIndicator.classList.add('hidden');
+            const voiceToggle = document.getElementById('voice-toggle');
+            if (voiceToggle) voiceToggle.innerHTML = '<i class="fas fa-microphone"></i>';
             this.stopVoiceControl();
         }
     }
@@ -1229,7 +1326,8 @@ getPatternStyle(background) {
         // 示例：模拟语音控制命令
         setTimeout(() => {
             if (this.voiceControlActive) {
-                document.getElementById('voice-indicator').style.color = '#27ae60';
+                const voiceIndicator = document.getElementById('voice-indicator');
+                if (voiceIndicator) voiceIndicator.style.color = '#27ae60';
             }
         }, 1000);
     }
@@ -1343,6 +1441,8 @@ getPatternStyle(background) {
 
 // 应用启动
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM已加载，启动应用...');
     const app = new ChurchMeetingApp();
-    window.churchApp = app; // 暴露到全局，便于调试
+    window.app = app; // 修复：暴露到全局，便于调试
+    console.log('应用实例已创建:', app);
 });
